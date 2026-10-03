@@ -1,0 +1,17 @@
+[package]
+name = "opencut-android-core"
+version = "0.1.0"
+edition = "2021"
+description = "OpenCut Rust core exposed to Android via JNI"
+repository = "https://github.com/baroisaac18-hub/opencut-android-native"
+license = "MIT"
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+jni = "0.21.1"
+time = { version = "0.1.0", path = "../rust/crates/time" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
