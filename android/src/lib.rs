@@ -25,6 +25,15 @@ use time::{
     format_timecode, media_time_from_seconds, media_time_to_seconds, parse_timecode,
 };
 
+// Ensure render-engine crates are linked into the cdylib (not dead-code-eliminated).
+use compositor::Compositor;
+use effects::EffectPipeline;
+use gpu::GpuContext;
+use masks::MaskFeatherPipeline;
+use std::mem::size_of;
+
+const ENGINE_MODULES: &str = "time,compositor,effects,masks,gpu";
+
 fn rate(numerator: jint, denominator: jint) -> FrameRate {
     FrameRate::new(numerator.max(1) as u32, denominator.max(1) as u32)
 }
@@ -62,7 +71,21 @@ pub extern "system" fn Java_com_opencut_android_core_OpencutCore_version(
     mut env: JNIEnv,
     _class: JClass,
 ) -> jstring {
-    env.new_string("opencut-rust-core-0.1.0 (route-b)")
+    env.new_string("opencut-rust-core-0.2.0 (route-b, render-engine linked)")
+        .map(|s| s.into_raw())
+        .unwrap_or(std::ptr::null_mut())
+}
+
+/// Reports which OpenCut classic Rust modules are compiled into this core.
+/// Also serves as a link-time anchor so compositor/effects/masks/gpu
+/// are never optimized out of the cdylib.
+#[no_mangle]
+pub extern "system" fn Java_com_opencut_android_core_OpencutCore_engineModules(
+    mut env: JNIEnv,
+    _class: JClass,
+) -> jstring {
+    let _ = (size_of::<Compositor>(), size_of::<EffectPipeline>(), size_of::<GpuContext>(), size_of::<MaskFeatherPipeline>());
+    env.new_string(ENGINE_MODULES)
         .map(|s| s.into_raw())
         .unwrap_or(std::ptr::null_mut())
 }
