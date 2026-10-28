@@ -32,3 +32,4 @@ Artifact: `opencut-android-core` → `jniLibs/<abi>/libopencut_android_core.so`
 | `parseTimecode(str, format, num, den)` | `..._parseTimecode` |
 
 Timecode formats: `0=MM:SS 1=HH:MM:SS 2=HH:MM:SS:CS 3=HH:MM:SS:FF`
+Please note that this project is still under development, so you may encounter some problems with the application. 
